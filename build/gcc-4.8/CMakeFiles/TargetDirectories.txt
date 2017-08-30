@@ -1,7 +1,0 @@
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/list_install_components.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/install.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/install/local.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/install/strip.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/vdb_deformer.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/rebuild_cache.dir
-/home/opochtarenko/workspace/VDB-Deformer/build/gcc-4.8/CMakeFiles/edit_cache.dir
