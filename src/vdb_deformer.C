@@ -26,7 +26,7 @@
  * The Star SOP
  */
 
-#include "SOP_Star.h"
+#include "vdb_deformer.h"
 
 #include <GU/GU_Detail.h>
 #include <GEO/GEO_PrimPoly.h>
