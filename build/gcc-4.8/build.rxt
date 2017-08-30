@@ -1,0 +1,84 @@
+arch: x86_64
+building: true
+caching: true
+created: 1504078740
+default_patch_lock: no_lock
+failure_description: null
+from_cache: false
+graph: >-
+  {'nodes': [((('fillcolor', '#AAFFAA'), ('fontsize', 10), ('style', 'filled')), [('_9',
+  'python-2.7.10-4'), ('_8', 'gcc-4.8.5'), ('_7', 'arch-x86_64'), ('_6', 'platform-linux'),
+  ('_10', 'houdini-16.0.671')]), ((('fillcolor', '#F6F6F6'), ('fontsize', 10), ('style',
+  'filled,dashed')), [('_13', 'python-2'), ('_12', 'arch-x86_64'), ('_11', 'platform-linux')]),
+  ((('fillcolor', '#FFFFAA'), ('fontsize', 10), ('style', 'filled,dashed')), [('_5',
+  '~os==CentOS-7.2'), ('_4', '~arch==x86_64'), ('_3', '~platform==linux'), ('_2',
+  'gcc-4.8'), ('_1', 'houdini-16')])], 'edges': [((('arrowsize', '0.5'),), [('_9',
+  '_2'), ('_8', '_11'), ('_8', '_12'), ('_4', '_7'), ('_3', '_6'), ('_2', '_8'), ('_1',
+  '_10'), ('_13', '_9'), ('_12', '_7'), ('_11', '_6'), ('_10', '_13'), ('_10', '_11'),
+  ('_10', '_12')])]}
+host: opochtarenkolnx.pi
+implicit_packages:
+- ~platform==linux
+- ~arch==x86_64
+- ~os==CentOS-7.2
+load_time: 0.0
+os: CentOS-7.2
+package_filter: []
+package_orderers: null
+package_paths:
+- /pipeline/pkg
+- /pipeline/binded_pkg
+- /Volumes/resources/pkg
+- /Volumes/resources/pkg_h2o
+- /pipeline/pkg_dev
+package_requests:
+- houdini-16
+- gcc-4.8
+parent_suite_path: null
+patch_locks: {}
+platform: linux
+requested_timestamp: null
+resolved_packages:
+- key: filesystem.variant
+  variables:
+    index: null
+    location: /pipeline/binded_pkg
+    name: platform
+    repository_type: filesystem
+    version: linux
+- key: filesystem.variant
+  variables:
+    index: null
+    location: /pipeline/binded_pkg
+    name: arch
+    repository_type: filesystem
+    version: x86_64
+- key: filesystem.variant
+  variables:
+    index: 0
+    location: /pipeline/pkg
+    name: gcc
+    repository_type: filesystem
+    version: 4.8.5
+- key: filesystem.variant
+  variables:
+    index: 0
+    location: /pipeline/pkg
+    name: python
+    repository_type: filesystem
+    version: 2.7.10-4
+- key: filesystem.variant
+  variables:
+    index: 0
+    location: /pipeline/pkg
+    name: houdini
+    repository_type: filesystem
+    version: 16.0.671
+rez_path: /pipeline/rezconfig/lib/python2.7/site-packages/rez-2.0.0_1.0.3-py2.7.egg/rez
+rez_version: 2.0.0-1.0.3
+serialize_version: '4.2'
+solve_time: 0.04337191581726074
+status: solved
+suite_context_name: null
+timestamp: 1504078740
+user: opochtarenko
