@@ -64,7 +64,6 @@ newSopOperator(OP_OperatorTable *table)
         SOP_Star::myTemplateList,   // My parameters
         0,                          // Min # of sources
         0,                          // Max # of sources
-        SOP_Star::myVariables,      // Local variables
         OP_FLAG_GENERATOR));        // Flag it as generator
 }
 
@@ -97,43 +96,6 @@ SOP_Star::myTemplateList[] = {
 };
 
 
-// Here's how we define local variables for the SOP.
-enum {
-    VAR_PT,     // Point number of the star
-    VAR_NPT     // Number of points in the star
-};
-
-CH_LocalVariable
-SOP_Star::myVariables[] = {
-    { "PT", VAR_PT, 0 },        // The table provides a mapping
-    { "NPT",    VAR_NPT, 0 },       // from text string to integer token
-    { 0, 0, 0 },
-};
-
-bool
-SOP_Star::evalVariableValue(fpreal &val, int index, int thread)
-{
-    // myCurrPoint will be negative when we're not cooking so only try to
-    // handle the local variables when we have a valid myCurrPoint index.
-    if (myCurrPoint >= 0)
-    {
-    // Note that "gdp" may be null here, so we do the safe thing
-    // and cache values we are interested in.
-    switch (index)
-    {
-        case VAR_PT:
-        val = (fpreal) myCurrPoint;
-        return true;
-        case VAR_NPT:
-        val = (fpreal) myTotalPoints;
-        return true;
-        default:
-        /* do nothing */;
-    }
-    }
-    // Not one of our variables, must delegate to the base class.
-    return SOP_Node::evalVariableValue(val, index, thread);
-}
 
 OP_Node *
 SOP_Star::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
@@ -150,6 +112,7 @@ SOP_Star::SOP_Star(OP_Network *net, const char *name, OP_Operator *op)
     // depending on what parameters changed.
     mySopFlags.setManagesDataIDs(true);
 
+
     myCurrPoint = -1; // To prevent garbage values from being returned
 }
 
@@ -158,106 +121,10 @@ SOP_Star::~SOP_Star() {}
 OP_ERROR
 SOP_Star::cookMySop(OP_Context &context)
 {
+
     fpreal now = context.getTime();
 
     // Since we don't have inputs, we don't need to lock them.
 
-    int divisions  = DIVISIONS(now)*2;  // We need twice our divisions of points
-    myTotalPoints = divisions;          // Set the NPT local variable value
-    myCurrPoint   = 0;                  // Initialize the PT local variable
-
-    int plane     = ORIENT();
-    int negradius = NEGRADIUS();
-    float tx      = CENTERX(now);
-    float ty      = CENTERY(now);
-    float tz      = CENTERZ(now);
-
-    int xcoord, ycoord, zcoord;
-    switch (plane)
-    {
-        case 0:         // XY Plane
-            xcoord = 0;
-            ycoord = 1;
-            zcoord = 2;
-            break;
-        case 1:         // YZ Plane
-            xcoord = 1;
-            ycoord = 2;
-            zcoord = 0;
-            break;
-        case 2:         // XZ Plane
-            xcoord = 0;
-            ycoord = 2;
-            zcoord = 1;
-            break;
-    }
-
-    // Check to see that there hasn't been a critical error in cooking the SOP.
-    if (error() >= UT_ERROR_ABORT)
-    {
-        myCurrPoint = -1;
-        return error();
-    }
-
-    if (divisions < 4)
-    {
-        // With the range restriction we have on the divisions, this
-        // is actually impossible, but it shows how to add an error
-        // message or warning to the SOP.
-        addWarning(SOP_MESSAGE, "Invalid divisions");
-        divisions = 4;
-    }
-
-    // In addition to destroying everything except the empty P
-    // and topology attributes, this bumps the data IDs for
-    // those remaining attributes, as well as the primitive list
-    // data ID.
-    gdp->clearAndDestroy();
-
-    // Start the interrupt server
-    UT_AutoInterrupt boss("Building Star");
-    if (boss.wasInterrupted())
-    {
-        myCurrPoint = -1;
-        return error();
-    }
-
-    // Build a polygon
-    GEO_PrimPoly *poly = GEO_PrimPoly::build(gdp, divisions, GU_POLY_CLOSED);
-    float tinc = M_PI*2 / (float)divisions;
-
-    // Now, set all the points of the polygon
-    for (int i = 0; i < divisions; i++)
-    {
-        // Check to see if the user has interrupted us...
-        if (boss.wasInterrupted())
-            break;
-
-        myCurrPoint = i;
-
-        // Since we expect the local variables to be used in specifying
-        // the radii, we have to evaluate the channels INSIDE the loop
-        // through the points...
-
-        float tmp = (float)i * tinc;
-        float rad = (i & 1) ? XRADIUS(now) : YRADIUS(now);
-        if (!negradius && rad < 0)
-            rad = 0;
-
-        UT_Vector3 pos;
-        pos(xcoord) = SYScos(tmp) * rad + tx;
-        pos(ycoord) = SYSsin(tmp) * rad + ty;
-        pos(zcoord) = 0 + tz;
-
-        GA_Offset ptoff = poly->getPointOffset(i);
-        gdp->setPos3(ptoff, pos);
-    }
-
-    // Set the node selection for this primitive. This will highlight all
-    // the primitives of the node, but only if the highlight flag for this node
-    // is on and the node is selected.
-    select(GA_GROUP_PRIMITIVE);
-
-    myCurrPoint = -1;
     return error();
 }

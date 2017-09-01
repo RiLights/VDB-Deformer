@@ -9,4 +9,6 @@ variants = [ ["gcc-4.8"] ]
 requires = [ "houdini-16" ]
 
 def commands():
+    env.HOUDINI_DSO_PATH.append('&')
     env.HOUDINI_DSO_PATH.append('{this.root}/dso')
+    env.HOUDINI_DSO_ERROR.set('1')
