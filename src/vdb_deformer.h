@@ -41,7 +41,7 @@ public:
     /// Stores the description of the interface of the SOP in Houdini.
     /// Each parm template refers to a parameter.
     static PRM_Template		 myTemplateList[];
-
+    static int testUI(void *op, int, fpreal time, const PRM_Template *);
 
 protected:
          SOP_Star(OP_Network *net, const char *name, OP_Operator *op);

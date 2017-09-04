@@ -68,6 +68,8 @@ newSopOperator(OP_OperatorTable *table)
 }
 
 static PRM_Name     negativeName("nradius", "Negative Radius");
+static PRM_Name     helloName("hello", "Hello");
+
 //                   ^^^^^^^^    ^^^^^^^^^^^^^^^
 //                   internal    descriptive version
 
@@ -76,6 +78,11 @@ static PRM_Default  radiiDefaults[] = {
                PRM_Default(1),      // Outside radius
                PRM_Default(0.3)     // Inside radius
             };
+int
+SOP_Star::testUI(void *op, int, fpreal, const PRM_Template *)
+{
+    return 1;
+}
 
 PRM_Template
 SOP_Star::myTemplateList[] = {
@@ -92,6 +99,7 @@ SOP_Star::myTemplateList[] = {
     PRM_Template(PRM_TOGGLE,    1, &negativeName),
     PRM_Template(PRM_XYZ,       3, &PRMcenterName),
     PRM_Template(PRM_ORD,   1, &PRMorientName, 0, &PRMplaneMenu),
+    PRM_Template(PRM_CALLBACK,1,&helloName,0, 0, 0, &SOP_Star::testUI),
     PRM_Template()
 };
 
