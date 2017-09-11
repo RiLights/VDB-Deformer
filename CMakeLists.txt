@@ -5,7 +5,7 @@ include(RezBuild)
 if(UNIX)
 add_compile_options(-std=c++11)
 #add_definitions(-D_LINUX -DLINUX -DNO_RTM=TRUE)
-SET(CMAKE_CXX_FLAGS "-ggdb -O3 -fPIC -std=c++0x -march=native -mno-avx")
+SET(CMAKE_CXX_FLAGS "-ggdb -O3 -fPIC -std=c++0x -march=native -mno-avx -DOPENVDB_3_ABI_COMPATIBLE -g")
 endif()
 
 

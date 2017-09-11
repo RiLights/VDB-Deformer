@@ -11,4 +11,5 @@ HEADERS += \
     ../src/vdb_deformer.h
 
 DISTFILES += \
-    ../package.py
+    ../package.py \
+    ../CMakeLists.txt

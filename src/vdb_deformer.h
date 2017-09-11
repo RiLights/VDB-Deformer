@@ -31,8 +31,8 @@
 
 #include <SOP/SOP_Node.h>
 
-namespace HDK_Sample {
-class SOP_Star : public SOP_Node
+
+class VDB_Deformer : public SOP_Node
 {
 public:
     static OP_Node		*myConstructor(OP_Network*, const char *,
@@ -44,8 +44,8 @@ public:
     static int testUI(void *op, int, fpreal time, const PRM_Template *);
 
 protected:
-         SOP_Star(OP_Network *net, const char *name, OP_Operator *op);
-    virtual ~SOP_Star();
+         VDB_Deformer(OP_Network *net, const char *name, OP_Operator *op);
+    virtual ~VDB_Deformer();
 
 
     /// cookMySop does the actual work of the SOP computing, in this
@@ -62,7 +62,11 @@ private:
     /// variable callback.
     /// Another use for local data is a cache to store expensive calculations.
     int		myCurrPoint;
+
+    void	ATTRIBNAME(UT_String &str, fpreal t)
+                    { evalString(str, 0, 0, t); }
+    fpreal	VALUE(fpreal t)		{ return evalFloat(1, 0, t); }
 };
-} // End HDK_Sample namespace
+
 
 #endif
