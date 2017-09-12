@@ -55,13 +55,13 @@ protected:
 private:
     /// The following list of accessors simplify evaluating the parameters
     /// of the SOP.
-    int		DIVISIONS(fpreal t)	{ return evalInt  ("divs", 0, t); }
+    //int		DIVISIONS(fpreal t)	{ return evalInt  ("divs", 0, t); }
 
     /// Member variables are stored in the actual SOP, not with the geometry
     /// In this case these are just used to transfer data to the local
     /// variable callback.
     /// Another use for local data is a cache to store expensive calculations.
-    int		myCurrPoint;
+    //int		myCurrPoint;
 
     void	ATTRIBNAME(UT_String &str, fpreal t)
                     { evalString(str, 0, 0, t); }

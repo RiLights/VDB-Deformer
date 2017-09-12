@@ -126,10 +126,10 @@ VDB_Deformer::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
 VDB_Deformer::VDB_Deformer(OP_Network *net, const char *name, OP_Operator *op)
     : SOP_Node(net, name, op)
 {
-    mySopFlags.setManagesDataIDs(true);
+    //mySopFlags.setManagesDataIDs(true);
 
 
-    myCurrPoint = -1; // To prevent garbage values from being returned
+    //myCurrPoint = -1; // To prevent garbage values from being returned
 }
 
 VDB_Deformer::~VDB_Deformer() {}
@@ -144,14 +144,15 @@ VDB_Deformer::cookMySop(OP_Context &context)
     if (inputs.lock(context) >= UT_ERROR_ABORT)
         return error();
 
-    duplicateSource(0, context);
-
     //gdp->clearAndDestroy();
+    const GU_Detail *volgdp = inputGeo(0);//duplicateSource(0, context);
 
-    UT_AutoInterrupt boss("Building Star");
+
+
+    UT_AutoInterrupt boss("Building Deformer");
     if (boss.wasInterrupted())
     {
-        myCurrPoint = -1;
+        //myCurrPoint = -1;
         return error();
     }
     //openvdb::initialize();
@@ -163,21 +164,21 @@ VDB_Deformer::cookMySop(OP_Context &context)
     //vol->buildFromGrid(gdp,grid);
 
     //GA_Primitive *vo=gdp->getPrimitiveByIndex(0);
-    GEO_Primitive *vo=gdp->getGEOPrimitiveByIndex(0);
-    GU_PrimVDB   *volumePtr = (GU_PrimVDB *)(gdp->getGEOPrimitiveByIndex(0));
+    //GEO_Primitive *vo=gdp->getGEOPrimitiveByIndex(0);
+    GU_PrimVDB   *volumePtr = (GU_PrimVDB *)(volgdp->getGEOPrimitiveByIndex(0));
 
 
 
     //context.getData();
 
-    openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create();
+    openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(volumePtr->getGrid());
 
     openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
-    openvdb::Coord xyz(5,5,5);
-    accessor.setValue(xyz, 1.0);
+    //openvdb::Coord xyz(5,5,5);
+    //accessor.setValue(xyz, 1.0);
     //xyz.reset(0,0,0);
-    accessor.setValue(xyz, 1.0);
-    //GU_PrimVDB::buildFromGrid((GU_Detail&)*gdp, grid, NULL, "density1");
+    //accessor.setValue(xyz, 1.0);
+    GU_PrimVDB::buildFromGrid((GU_Detail&)*volgdp, grid, NULL, "density1");
 
     int x,y,z;
     volumePtr->getRes(x,y,z);
@@ -191,16 +192,20 @@ VDB_Deformer::cookMySop(OP_Context &context)
         float dist = iter.getValue();
         //std::cout << iter.getCoord() << std::endl;
         mas.push_back(iter.getCoord());
-        openvdb::math::Coord val=iter.getCoord();
-        val.setZ(val[2]+1);
+        //openvdb::math::Coord val=iter.getCoord();
+        //val.setZ(val[2]+1);
         //accessor2.setValue(val,1);
         //iter.setValueOff();
         //std::cout<<"hi "<<dist<<"\n";
         //iter.setValue((outside - dist) / width);
     }
-    //for (std::vector::iterator ix=mas.begin();mas.end();ix++){
-//
-  //  }
+
+    for (int ix=0;ix<mas.size();ix++){
+        openvdb::math::Coord val=mas[ix];
+        //accessor2.setValue(val,0);
+        val.setZ(val[2]+25);
+        accessor.setValue(val,1);
+    }
 /*
     for (int ix=-x/2;ix<=x/2;ix++){
         for (int iy=-y/2;iy<=y/2;iy++){
@@ -237,8 +242,8 @@ VDB_Deformer::cookMySop(OP_Context &context)
     }*/
 
 
-    std::cout<<"hi2 "<<x<<"\n";
-
+    //std::cout<<"hi2 "<<x<<"\n";
+    //gdp->destroyStashed();
 
     UT_Vector3 pos;
     pos(0) = 1;
