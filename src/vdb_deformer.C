@@ -138,123 +138,50 @@ OP_ERROR
 VDB_Deformer::cookMySop(OP_Context &context)
 {
 
-    fpreal t = context.getTime();
-
     OP_AutoLockInputs inputs(this);
     if (inputs.lock(context) >= UT_ERROR_ABORT)
         return error();
 
-    //gdp->clearAndDestroy();
-    const GU_Detail *volgdp = inputGeo(0);//duplicateSource(0, context);
+    gdp->clearAndDestroy();
+    duplicateSource(0, context);//const GU_Detail *gdp = inputGeo(0);//duplicateSource(0, context);
 
 
 
     UT_AutoInterrupt boss("Building Deformer");
     if (boss.wasInterrupted())
     {
-        //myCurrPoint = -1;
         return error();
     }
-    //openvdb::initialize();
-    //GU_PrimVDB           *vol;
-    //vol = (GU_PrimVDB *)GU_PrimVDB::build((GU_Detail *)gdp);
-    //vol->build(gdp);
-    //openvdb::createGrid<openvdb::FloatGrid>();
-    //openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create();
-    //vol->buildFromGrid(gdp,grid);
 
-    //GA_Primitive *vo=gdp->getPrimitiveByIndex(0);
-    //GEO_Primitive *vo=gdp->getGEOPrimitiveByIndex(0);
-    GU_PrimVDB   *volumePtr = (GU_PrimVDB *)(volgdp->getGEOPrimitiveByIndex(0));
+    GU_PrimVDB   *volumePtr = (GU_PrimVDB *)(gdp->getGEOPrimitiveByIndex(0));
 
 
+    //openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(volumePtr->getGrid());
 
-    //context.getData();
+    //openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
+    //GU_PrimVDB::buildFromGrid((GU_Detail&)*gdp, grid, NULL, "density1");
 
-    openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(volumePtr->getGrid());
-
-    openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
-    //openvdb::Coord xyz(5,5,5);
-    //accessor.setValue(xyz, 1.0);
-    //xyz.reset(0,0,0);
-    //accessor.setValue(xyz, 1.0);
-    GU_PrimVDB::buildFromGrid((GU_Detail&)*volgdp, grid, NULL, "density1");
-
-    int x,y,z;
-    volumePtr->getRes(x,y,z);
+    //int x,y,z;
+    //volumePtr->getRes(x,y,z);
+    volumePtr->makeGridUnique();
     openvdb::GridBase::Ptr gg=volumePtr->getGridPtr();
     openvdb::FloatGrid::Ptr gridf = openvdb::gridPtrCast<openvdb::FloatGrid>(gg);
     openvdb::FloatGrid::Accessor accessor2 = gridf->getAccessor();
 
+    /////
     std::vector<openvdb::math::Coord> mas;
-    //accessor2.setValue(xyz, 100.0);
     for (openvdb::FloatGrid::ValueOnIter iter = gridf->beginValueOn(); iter; ++iter) {
         float dist = iter.getValue();
-        //std::cout << iter.getCoord() << std::endl;
         mas.push_back(iter.getCoord());
-        //openvdb::math::Coord val=iter.getCoord();
-        //val.setZ(val[2]+1);
-        //accessor2.setValue(val,1);
-        //iter.setValueOff();
-        //std::cout<<"hi "<<dist<<"\n";
-        //iter.setValue((outside - dist) / width);
     }
 
     for (int ix=0;ix<mas.size();ix++){
         openvdb::math::Coord val=mas[ix];
         //accessor2.setValue(val,0);
         val.setZ(val[2]+25);
-        accessor.setValue(val,1);
+        accessor2.setValue(val,1);
     }
-/*
-    for (int ix=-x/2;ix<=x/2;ix++){
-        for (int iy=-y/2;iy<=y/2;iy++){
-            for (int iz=-z/2;iz<=z/2;iz++){
 
-                openvdb::Coord xyz2(ix,iy,iz);
-                openvdb::Coord xyzs(ix,iy,iz+5);
-                //accessor2.setActiveState(xyzs,true);
-                //accessor2.setValue(xyzs, accessor2.getValue(xyz2));
-                accessor2.setValue(xyzs, 1);
-                //accessor2.setActiveState(xyz2,false);
-            }
-        }
-    }*/
-
-    /*
-    for (openvdb::FloatGrid::ValueOnCIter iter = gridf->cbeginValueOn(); iter.test(); ++iter) {
-        //const openvdb::Vec3f& value = *iter;
-        // Print the coordinates of all voxels whose vector value has
-        // a length greater than 10, and print the bounding box coordinates
-        // of all tiles whose vector value length is greater than 10.
-        //std::cout << iter.getCoord() << std::endl;
-        iter.getValue();
-        /*
-        if (value.length() > 10.0) {
-            if (iter.isVoxelValue()) {
-                std::cout << iter.getCoord() << std::endl;
-            } else {
-                openvdb::CoordBBox bbox;
-                iter.getBoundingBox(bbox);
-                std::cout << bbox << std::endl;
-            }
-        }
-    }*/
-
-
-    //std::cout<<"hi2 "<<x<<"\n";
-    //gdp->destroyStashed();
-
-    UT_Vector3 pos;
-    pos(0) = 1;
-    pos(1) = 2;
-    pos(2) = 3;
-
-    //GA_Offset ptoff = gdp->pointOffset(GA_Index(1));
-    //GA_Offset ptoff = gdp->appendPointOffset();
-    //gdp->setPos3(ptoff, pos);
-
-    printf("done\n");
 
     return error();
 }
