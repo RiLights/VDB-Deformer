@@ -94,4 +94,10 @@ else()
 		target_link_libraries( vdb_deformer ${LINK_LIBS} )
 		install( TARGETS vdb_deformer DESTINATION ${CMAKE_SOURCE_DIR}/dso )
 
+		add_library( vdb_activate_from_points SHARED "src/vdb_activate_from_points.C" "src/vdb_activate_from_points.h" )
+		set_target_properties( vdb_activate_from_points PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE )
+		set_target_properties( vdb_activate_from_points PROPERTIES PREFIX "" )
+		target_link_libraries( vdb_activate_from_points ${LINK_LIBS} )
+		install( TARGETS vdb_activate_from_points DESTINATION ${CMAKE_SOURCE_DIR}/dso )
+
 endif()
