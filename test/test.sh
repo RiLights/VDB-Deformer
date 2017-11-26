@@ -9,4 +9,4 @@ export HOUDINI_DSO_ERROR=1
 echo "DSO path "$HOUDINI_DSO_PATH
 
 # run testing scene
-houdini -foreground $ROOT/test/test.hip
+houdini -foreground $ROOT/test/test.hipnc
