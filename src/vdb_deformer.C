@@ -154,44 +154,58 @@ VDB_Deformer::cookMySop(OP_Context &context)
         return error();
 
     gdp->clearAndDestroy();
-    duplicateSource(0, context);//const GU_Detail *gdp = inputGeo(0);//duplicateSource(0, context);
-    const GU_Detail *gpd_rest_deform_points = inputGeo(1);
+    duplicateSource(0, context);
+
+    // Read Rest, Deform Grid
+    const GU_Detail *gpd_rest_points = inputGeo(1);
     const GU_Detail *gpd_deform_points = inputGeo(2);
-    std::cout<<"debug "<<gpd_rest_deform_points->getNumPoints()<<std::endl;
-    for (int i=0;i<gpd_rest_deform_points->getNumPoints();i++){
+    //Test Poits
+    //std::cout<<"debug "<<gpd_rest_deform_points->getNumPoints()<<std::endl;
+    for (int i=0;i<gpd_rest_points->getNumPoints();i++){
 
-        UT_Vector3 p = gpd_rest_deform_points->getPos3(i);
-        std::cout<<"debugP "<<p<<std::endl;
+        UT_Vector3 p_rest = gpd_rest_points->getPos3(i);
+        UT_Vector3 p_deformed = gpd_deform_points->getPos3(i);
+        //UT_Vector3 p_diffrence = p_rest-p_deformed;
+        //std::cout<<"debugP "<<p<<std::endl;
     }
+    //----------------------
 
-    UT_AutoInterrupt boss("Building Deformer");
+    UT_AutoInterrupt boss("Building Deformer Volume");
     if (boss.wasInterrupted())
     {
         return error();
     }
 
-    GU_PrimVDB   *vdbPrim = reinterpret_cast<GU_PrimVDB *> (gdp->getGEOPrimitiveByIndex(0));  //(GU_PrimVDB *)(gdp->getGEOPrimitiveByIndex(0));
+    GU_PrimVDB   *vdbPrim = dynamic_cast<GU_PrimVDB *> (gdp->getGEOPrimitiveByIndex(0));  //(GU_PrimVDB *)(gdp->getGEOPrimitiveByIndex(0));
 
     if(!vdbPrim)
         {
-            addError(SOP_MESSAGE, "Input geometry must contain a VDB");
+            addError(SOP_MESSAGE, "First input must contain a VDB");
             return error();
         }
 
-
+    // create new (deformed) volume
     openvdb::FloatGrid::Ptr grid_new = openvdb::FloatGrid::create(vdbPrim->getGrid());
-
     openvdb::FloatGrid::Accessor accessor_new = grid_new->getAccessor();
     GU_PrimVDB::buildFromGrid((GU_Detail&)*gdp, grid_new, NULL, "deformed");
 
-    int x,y,z;
-    vdbPrim->getRes(x,y,z);
-    //vdbPrim->makeGridUnique();
+
+
+    // original volume
     openvdb::GridBase::Ptr gridbase=vdbPrim->getGridPtr();
     openvdb::FloatGrid::Ptr grid = openvdb::gridPtrCast<openvdb::FloatGrid>(gridbase);
-    //openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
+    for (openvdb::FloatGrid::ValueOnIter iter = grid->beginValueOn(); iter; ++iter) {
+        float dist = iter.getValue();
+        std::cout<<"debugVolumeValue: "<<dist<<std::endl;
+        //mas.push_back(iter.getCoord());
+    }
 
+    //int x,y,z;
+    //vdbPrim->getRes(x,y,z);
+    //openvdb::GridBase::Ptr gridbase=vdbPrim->getGridPtr();
+    //openvdb::FloatGrid::Ptr grid = openvdb::gridPtrCast<openvdb::FloatGrid>(gridbase);
 
+/*
     std::vector<openvdb::math::Coord> mas;
     for (openvdb::FloatGrid::ValueOnIter iter = grid->beginValueOn(); iter; ++iter) {
         float dist = iter.getValue();
@@ -200,11 +214,10 @@ VDB_Deformer::cookMySop(OP_Context &context)
 
     for (int ix=0;ix<mas.size();ix++){
         openvdb::math::Coord val=mas[ix];
-        //accessor2.setValue(val,0);
         val.setZ(val[2]+25);
         accessor_new.setValue(val,1);
     }
-
+*/
 
     return error();
 }
