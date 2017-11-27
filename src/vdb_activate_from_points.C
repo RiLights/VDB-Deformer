@@ -91,13 +91,14 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     // get pointer to GU_PrimVDB primitive
     GU_PrimVDB *vdbPrim = reinterpret_cast<GU_PrimVDB *> (gdp->getGEOPrimitiveByIndex(0));
 
+    // terminate if volume is not VDB
     if(!vdbPrim)
     {
         addError(SOP_MESSAGE, "First input must contain a VDB");
         return error();
     }
 
-    // make deep copy
+    // make a deep copy
     vdbPrim->makeGridUnique();
     
     // get grid base pointer and cast to float grid pointer
