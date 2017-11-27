@@ -2,3 +2,5 @@
 /build/
 /dso/
 *.pyc
+*.DS_Store
+/test/backup/
