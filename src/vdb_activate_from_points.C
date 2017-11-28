@@ -48,7 +48,8 @@ SOP_VdbActivateFromPoints::inputLabel(unsigned idx) const
 }
 
 // set empty parameter interface
-PRM_Template SOP_VdbActivateFromPoints::myTemplateList[] = {
+PRM_Template SOP_VdbActivateFromPoints::myTemplateList[] = 
+{
     PRM_Template()
 };
 
@@ -82,15 +83,17 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
 
     std::cout << "number of active points: " << points->getNumPoints() << std::endl;
 
-    // check for escape
-    UT_AutoInterrupt progress("Activating voxels");
-    if (progress.wasInterrupted())
-        return error();
-
     // get pointer to GU_PrimVDB primitive
-    GU_PrimVDB *vdbPrim = reinterpret_cast<GU_PrimVDB *> (gdp->getGEOPrimitiveByIndex(0));
+    GU_PrimVDB *vdbPrim = dynamic_cast<GU_PrimVDB *>(gdp->getGEOPrimitiveByIndex(0));
 
-    // make deep copy
+    // terminate if volume is not VDB
+    if(!vdbPrim)
+    {
+        addError(SOP_MESSAGE, "First input must contain a VDB!");
+        return error();
+    }
+
+    // make a deep copy
     vdbPrim->makeGridUnique();
     
     // get grid base pointer and cast to float grid pointer
@@ -119,7 +122,13 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     }
     /*
     // loop over all the points and activate voxels at points' positions
-    for (int i=0; i < points->getNumPoints(); i++){
+    for (int i=0; i < points->getNumPoints(); i++) 
+    {
+        // check for escape
+        UT_AutoInterrupt progress("Activating voxels...");
+        if (progress.wasInterrupted())
+            return error();
+
         // get current point position
         UT_Vector3 p = points->getPos3(i);
         std::cout << i << ". point world space position: " << p << std::endl;
