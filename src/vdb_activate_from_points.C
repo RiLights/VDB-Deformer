@@ -103,6 +103,21 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     // get transformation of the grid
     const openvdb::math::Transform &vdbGridXform = vdbPtr->transform();
 
+    // loop over all the points by handle
+    GA_ROHandleV3 Phandle(points->findAttribute(GA_ATTRIB_POINT, "P"));
+    GA_Offset ptoff;
+    GA_FOR_ALL_PTOFF(points, ptoff)
+    {
+        UT_Vector3 Pvalue = Phandle.get(ptoff);
+        std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
+
+        // create openvdb vector with values from houdini's vector, transform it from world space to vdb's index space (based on vdb's transformation)
+        openvdb::Vec3R p_( Pvalue[0], Pvalue[1], Pvalue[2] );
+        openvdb::Coord p_xformed( vdbGridXform.worldToIndexCellCentered(p_) );
+        std::cout << " volmue index space position: " << p_xformed << std::endl;
+        vdb_acess.setValueOn( p_xformed );
+    }
+    /*
     // loop over all the points and activate voxels at points' positions
     for (int i=0; i < points->getNumPoints(); i++){
         // get current point position
@@ -114,7 +129,7 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
         openvdb::Coord p_xformed( vdbGridXform.worldToIndexCellCentered(p_) );
         std::cout << " volmue index space position: " << p_xformed << std::endl;
         vdb_acess.setValueOn( p_xformed );
-    }
+    }*/
 
     return error();
 }
