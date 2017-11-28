@@ -101,7 +101,7 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     openvdb::FloatGrid::Ptr vdbPtr = openvdb::gridPtrCast<openvdb::FloatGrid>(vdbPtrBase);
 
     // get accessor to the float grid
-    openvdb::FloatGrid::Accessor vdb_acess = vdbPtr->getAccessor();
+    openvdb::FloatGrid::Accessor vdb_access = vdbPtr->getAccessor();
 
     // get transformation of the grid
     const openvdb::math::Transform &vdbGridXform = vdbPtr->transform();
@@ -111,34 +111,21 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     GA_Offset ptoff;
     GA_FOR_ALL_PTOFF(points, ptoff)
     {
-        UT_Vector3 Pvalue = Phandle.get(ptoff);
-        std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
-
-        // create openvdb vector with values from houdini's vector, transform it from world space to vdb's index space (based on vdb's transformation)
-        openvdb::Vec3R p_( Pvalue[0], Pvalue[1], Pvalue[2] );
-        openvdb::Coord p_xformed( vdbGridXform.worldToIndexCellCentered(p_) );
-        std::cout << " volmue index space position: " << p_xformed << std::endl;
-        vdb_acess.setValueOn( p_xformed );
-    }
-    /*
-    // loop over all the points and activate voxels at points' positions
-    for (int i=0; i < points->getNumPoints(); i++) 
-    {
         // check for escape
         UT_AutoInterrupt progress("Activating voxels...");
         if (progress.wasInterrupted())
             return error();
 
-        // get current point position
-        UT_Vector3 p = points->getPos3(i);
-        std::cout << i << ". point world space position: " << p << std::endl;
+        // get current pont position
+        UT_Vector3 Pvalue = Phandle.get(ptoff);
+        //std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
 
         // create openvdb vector with values from houdini's vector, transform it from world space to vdb's index space (based on vdb's transformation)
-        openvdb::Vec3R p_( p[0], p[1], p[2] );
+        openvdb::Vec3R p_( Pvalue[0], Pvalue[1], Pvalue[2] );
         openvdb::Coord p_xformed( vdbGridXform.worldToIndexCellCentered(p_) );
-        std::cout << " volmue index space position: " << p_xformed << std::endl;
-        vdb_acess.setValueOn( p_xformed );
-    }*/
+        //std::cout << " volmue index space position: " << p_xformed << std::endl;
+        vdb_access.setValueOn( p_xformed );
+    }
 
     return error();
 }
