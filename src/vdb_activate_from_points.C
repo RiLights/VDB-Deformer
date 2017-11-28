@@ -81,7 +81,7 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     // get pointer to points from second input
     const GU_Detail *points = inputGeo(1);
 
-    std::cout << "number of active points: " << points->getNumPoints() << std::endl;
+    //std::cout << "number of active points: " << points->getNumPoints() << std::endl;
 
     // get pointer to GU_PrimVDB primitive
     GU_PrimVDB *vdbPrim = dynamic_cast<GU_PrimVDB *>(gdp->getGEOPrimitiveByIndex(0));
