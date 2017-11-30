@@ -18,9 +18,10 @@ protected:
 
     virtual const char *inputLabel(unsigned idx) const;
 
-    virtual OP_ERROR		 cookMySop(OP_Context &context);
+    virtual OP_ERROR cookMySop(OP_Context &context);
 
 private:
+    int DEBUG() { return evalInt("debug", 0, 0); }
 
 };
 }

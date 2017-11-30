@@ -47,9 +47,13 @@ SOP_VdbActivateFromPoints::inputLabel(unsigned idx) const
     }
 }
 
-// set empty parameter interface
+// define parameters
+static PRM_Name debugPRM("debug", "Print debug information");
+
+// assign parameters to the interface
 PRM_Template SOP_VdbActivateFromPoints::myTemplateList[] = 
 {
+    PRM_Template(PRM_TOGGLE, 1, &debugPRM, PRMzeroDefaults),
     PRM_Template()
 };
 
@@ -61,7 +65,6 @@ OP_Node * SOP_VdbActivateFromPoints::myConstructor(OP_Network *net, const char *
 SOP_VdbActivateFromPoints::SOP_VdbActivateFromPoints(OP_Network *net, const char *name, OP_Operator *op)
     : SOP_Node(net, name, op)
 {
-    //mySopFlags.setManagesDataIDs(true);
 }
 
 SOP_VdbActivateFromPoints::~SOP_VdbActivateFromPoints() {}
@@ -81,7 +84,10 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     // get pointer to points from second input
     const GU_Detail *points = inputGeo(1);
 
-    //std::cout << "number of active points: " << points->getNumPoints() << std::endl;
+    if (DEBUG())
+    {
+        std::cout << "number of points: " << points->getNumPoints() << std::endl;
+    }
 
     // get pointer to GU_PrimVDB primitive
     GU_PrimVDB *vdbPrim = dynamic_cast<GU_PrimVDB *>(gdp->getGEOPrimitiveByIndex(0));
@@ -118,13 +124,17 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
 
         // get current pont position
         UT_Vector3 Pvalue = Phandle.get(ptoff);
-        //std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
 
         // create openvdb vector with values from houdini's vector, transform it from world space to vdb's index space (based on vdb's transformation)
         openvdb::Vec3R p_( Pvalue[0], Pvalue[1], Pvalue[2] );
         openvdb::Coord p_xformed( vdbGridXform.worldToIndexCellCentered(p_) );
-        //std::cout << " volmue index space position: " << p_xformed << std::endl;
         vdb_access.setValueOn( p_xformed );
+        
+        if (DEBUG())
+        {
+            std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
+            std::cout << "  volmue index space position: " << p_xformed << std::endl;
+        }
     }
 
     return error();
