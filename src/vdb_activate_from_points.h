@@ -7,20 +7,26 @@ namespace VdbActivateFromPoints {
 class SOP_VdbActivateFromPoints : public SOP_Node
 {
 public:
-    static OP_Node		*myConstructor(OP_Network*, const char *, OP_Operator *);
+    // node contructor for HDK
+    static OP_Node *myConstructor(OP_Network*, const char *, OP_Operator *);
 
-    static PRM_Template		 myTemplateList[];
+    // parameter array for Houdini UI
+    static PRM_Template myTemplateList[];
 
 protected:
+    // constructor, destructor
     SOP_VdbActivateFromPoints(OP_Network *net, const char *name, OP_Operator *op);
 
     virtual ~SOP_VdbActivateFromPoints();
 
+    // labeling node inputs in Houdini UI
     virtual const char *inputLabel(unsigned idx) const;
 
+    // main function that does geometry processing
     virtual OP_ERROR cookMySop(OP_Context &context);
 
 private:
+    // helper function for returning value of parameter
     int DEBUG() { return evalInt("debug", 0, 0); }
 
 };
