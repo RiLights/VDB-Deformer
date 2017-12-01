@@ -134,6 +134,7 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
     const openvdb::math::Transform &vdbGridXform = vdbPtr->transform();
 
     // loop over all the points by handle
+    int i = 0;
     GA_ROHandleV3 Phandle(points->findAttribute(GA_ATTRIB_POINT, "P")); // handle to read only attribute
     GA_Offset ptoff;
     GA_FOR_ALL_PTOFF(points, ptoff)
@@ -152,9 +153,11 @@ SOP_VdbActivateFromPoints::cookMySop(OP_Context &context)
         
         if (DEBUG())
         {
-            std::cout << ptoff << ". point world space position: " << Pvalue << std::endl;
+            std::cout << i << ". point world space position: " << Pvalue << std::endl;
             std::cout << "  volmue index space position: " << p_xformed << std::endl;
         }
+
+        i++;
     }
 
     return error();
